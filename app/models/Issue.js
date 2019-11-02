@@ -41,7 +41,7 @@ let issueSchema = new Schema({
     default:[]
   
   },
-  createdOn :{
+  created:{
     type:Date,
     default:Date.now
   },

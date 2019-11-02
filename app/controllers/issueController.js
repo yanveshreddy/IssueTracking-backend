@@ -12,7 +12,10 @@ const logger =require('../libs/loggerLib');
 
 let getAllIssues = (req, res) => {
    // console.log(req.xyz);
-   issueModel.find().exec((err, result) => {
+   issueModel.find()
+   .select('-_id issueId title status reporter')
+   .lean().
+   exec((err, result) => {
         if (err) {
 
             logger.error(err.message, 'Issue Controller: getAllIssues', 10)
@@ -113,8 +116,8 @@ let createIssue = (req, res) => {
         assignee: req.body.assignee,
         description: req.body.description,
         watchers:[req.body.reporter,req.body.assignee],
-        created: today,
-        lastModified: today
+        created: time.now(),
+        lastModified: time.now()
     })
 
     newIssue.save((err, result) => {
