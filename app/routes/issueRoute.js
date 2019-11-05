@@ -25,8 +25,8 @@ module.exports.setRouter = (app) => {
 
     app.get(`${baseUrl}/:issueId/details`,auth.isAuthorized,issueController.getIssueById);
 
-    app.get(`${baseUrl}/:assigneeId/details`,auth.isAuthorized,issueController.getByAssignee);
+    app.get(`${baseUrl}/:userId/assigneeIssues`,auth.isAuthorized,issueController.getAllIssuesByAssignee);
 
-    app.get(`${baseUrl}/autoComplete`,auth.isAuthorized,issueController.assigneeAutocomplete);   
+    // app.get(`${baseUrl}/autoComplete`,auth.isAuthorized,issueController.assigneeAutocomplete);   
 
 }

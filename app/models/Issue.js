@@ -19,14 +19,8 @@ let issueSchema = new Schema({
     type: String,
     default: 'in- progress'
   },
-  reporter: {
-    type: String,
-    default: ''
-  },
-  assignee: {
-    type: String,
-    default: ''
-  },
+  reporter: [],
+  assignee: [],
   description: {
     type: String,
     default: ''

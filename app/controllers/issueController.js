@@ -12,10 +12,10 @@ const logger =require('../libs/loggerLib');
 
 let getAllIssues = (req, res) => {
    // console.log(req.xyz);
-   issueModel.find()
-   .select('-_id issueId title status reporter')
-   .lean().
-   exec((err, result) => {
+   issueModel.aggregate([ { $project : {_id:0,issueId:1,title:1,status:1,reportername: { $arrayElemAt: [ "$reporter.name", 0 ] } } } ])
+//    .select('-_id issueId title status reporter[0].name')
+  // .lean()
+   .exec((err, result) => {
         if (err) {
 
             logger.error(err.message, 'Issue Controller: getAllIssues', 10)
@@ -54,9 +54,11 @@ let getIssueById = (req, res) => {
     })
 }
 
-let getByAssignee = (req, res) => {
+let getAllIssuesByAssignee = (req, res) => {
 
-    issueModel.findOne({ 'author': req.params.author }).exec((err, result) => {
+   // logger.info('userId'+req.params.userId, 'Issue Controller: getAllIssuesByAssignee')
+    issueModel.aggregate([ {$match: {'assignee.userId': req.params.userId}},{ $project : {_id:0,issueId:1,title:1,status:1,reportername: { $arrayElemAt: [ "$reporter.name", 0 ] } } } ])
+    .exec((err, result) => {
         if (err) {
             let apiResponse=response.generate(true,"Failed to find Issue Details",500,null);
             res.send(apiResponse);
@@ -72,50 +74,27 @@ let getByAssignee = (req, res) => {
     })
 }
 
-let assigneeAutocomplete =(req,res)=>{
-    let q = req.body.query;
-    let query = {
 
-        "$or": [{"fullName.firstName": {"$regex": q, "$options": "i"}}, {"fullName.lastName": {"$regex": q, "$options": "i"}}]
-    ,fullName:1
-    };
-
-   //
-   //
-    let output = [];
-
-    Users.find(query).limit(6).exec((err, result) => {
-        if (err) {
-            let apiResponse=response.generate(true,"Failed to find issue Details",500,null);
-            res.send(apiResponse);
-        }
-        else if (check.isEmpty(result)) {
-            let apiResponse=response.generate(true,"No issue found",404,null);
-            res.send(apiResponse);
-        }
-        else {
-            let apiResponse=response.generate(false,"Deatails Found",200,result);
-            res.send(apiResponse);
-        }
-
-    })
-}
 
 
 let createIssue = (req, res) => {
 
     var today = time.now();
     let issueId = shortId.generate();
-
+    let reporterObj=JSON.parse(req.body.reporter);
+    let assigneeObj=JSON.parse(req.body.assignee);
    // let reporterObj={reporterId}
-
+   let watchersData=[];
+   watchersData.push(reporterObj);
+   watchersData.push(assigneeObj);
     let newIssue = new issueModel({
         issueId: issueId,
         title: req.body.title,
-        reporter: req.body.reporter,
-        assignee: req.body.assignee,
+        reporter: reporterObj,
+        assignee: assigneeObj,
+        status: req.body.status,
         description: req.body.description,
-        watchers:[req.body.reporter,req.body.assignee],
+        watchers:watchersData,
         created: time.now(),
         lastModified: time.now()
     })
@@ -235,13 +214,13 @@ let deleteIssue = (req, res) => {
 module.exports = {
     getAllIssues: getAllIssues,
     getIssueById: getIssueById,
-    getByAssignee:getByAssignee,
+    getAllIssuesByAssignee:getAllIssuesByAssignee,
     createIssue: createIssue,
    // searchIssue : searchIssue,
     editIssue: editIssue,
     addComment : addComment,
     addWatchee : addWatchee,
-    assigneeAutocomplete:assigneeAutocomplete,
+    
 
     deleteIssue : deleteIssue
 }
