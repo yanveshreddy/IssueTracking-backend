@@ -139,15 +139,16 @@ let editIssue = (req, res) => {
 let addComment = (req, res) => {
 
     //req.body.comment = JSON.parse(req.body.comment)
+    let commentObj=JSON.parse(req.body.comments);
 
-    let commentObj = {commenterId:req.body.commenterId, commentedBy: req.body.commentedBy, comment: req.body.comment}
+    //let commentObj = {commenterId:req.body.commenterId, commentedBy: req.body.commentedBy, comment: req.body.comment}
 
     let options = { $push: { comments: commentObj } }
-    if(req.body.comment){
+    if(commentObj){
 
         issueModel.update({ 'issueId': req.params.issueId }, options).exec((err, result) => {
             if (err) {
-                console.log(err)
+               // console.log(err)
                 logger.error(err.message, 'issueController: Database error', 10)
                 let apiResponse = response.generate(true, 'Failed To Posted comment', 500, null)
                 res.send(apiResponse)

@@ -15,9 +15,9 @@ module.exports.setRouter = (app) => {
 
     app.put(`${baseUrl}/:issueId/edit`,auth.isAuthorized,issueController.editIssue);
    
-    app.put(`${baseUrl}/:issueId/addcomment`,auth.isAuthorized,issueController.addComment);
+    app.put(`${baseUrl}/:issueId/addComment`,auth.isAuthorized,issueController.addComment);
 
-    app.put(`${baseUrl}/:issueId/addwatchee`,auth.isAuthorized,issueController.addWatchee);
+    app.put(`${baseUrl}/:issueId/addWatchee`,auth.isAuthorized,issueController.addWatchee);
 
     app.post(`${baseUrl}/:issueId/delete`,auth.isAuthorized,issueController.deleteIssue);
   
