@@ -12,7 +12,7 @@ const logger =require('../libs/loggerLib');
 
 let getAllIssues = (req, res) => {
    // console.log(req.xyz);
-   issueModel.aggregate([ { $project : {_id:0,issueId:1,title:1,status:1,reportername: { $arrayElemAt: [ "$reporter.name", 0 ] } } } ])
+   issueModel.aggregate([ { $project : {_id:0,issueId:1,title:1,status:1,reportername: { $arrayElemAt: [ "$reporter.name", 0 ] },created:1 } } ])
 //    .select('-_id issueId title status reporter[0].name')
   // .lean()
    .exec((err, result) => {
@@ -84,9 +84,11 @@ let createIssue = (req, res) => {
     let reporterObj=JSON.parse(req.body.reporter);
     let assigneeObj=JSON.parse(req.body.assignee);
    // let reporterObj={reporterId}
-   let watchersData=[];
+    let watchersData=[];
    watchersData.push(reporterObj);
    watchersData.push(assigneeObj);
+   // let localTime=time.get(time.now);
+
     let newIssue = new issueModel({
         issueId: issueId,
         title: req.body.title,

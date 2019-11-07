@@ -8,12 +8,16 @@ let now = () => {
 let getLocalTime = () => {
   return moment().tz(timeZone).format()
 }
+let getCurrentLocalDate=()=>{
+  return moment().utc().format('L');
+}
 
 let convertToLocalTime = (time) => {
   return momenttz.tz(time, timeZone).format('LLLL')
 }
 module.exports = {
   now: now,
+  getCurrentLocalDate:getCurrentLocalDate,
   getLocalTime: getLocalTime,
   convertToLocalTime: convertToLocalTime
 }

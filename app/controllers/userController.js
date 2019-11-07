@@ -336,6 +336,7 @@ let loginFunction = (req, res) => {
  * auth params: userId.
  */
 let logout = (req, res) => {
+    
   AuthModel.findOneAndRemove({userId: req.user.userId}, (err, result) => {
     if (err) {
         console.log(err)
