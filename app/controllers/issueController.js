@@ -84,9 +84,9 @@ let createIssue = (req, res) => {
     let reporterObj=JSON.parse(req.body.reporter);
     let assigneeObj=JSON.parse(req.body.assignee);
    // let reporterObj={reporterId}
-    let watchersData=[];
-   watchersData.push(reporterObj);
-   watchersData.push(assigneeObj);
+//     let watchersData=[];
+//    watchersData.push(reporterObj);
+//    watchersData.push(assigneeObj);
    // let localTime=time.get(time.now);
 
     let newIssue = new issueModel({
@@ -96,7 +96,6 @@ let createIssue = (req, res) => {
         assignee: assigneeObj,
         status: req.body.status,
         description: req.body.description,
-        watchers:watchersData,
         created: time.now(),
         lastModified: time.now()
     })
@@ -146,6 +145,7 @@ let addComment = (req, res) => {
     //let commentObj = {commenterId:req.body.commenterId, commentedBy: req.body.commentedBy, comment: req.body.comment}
 
     let options = { $push: { comments: commentObj } }
+    
     if(commentObj){
 
         issueModel.update({ 'issueId': req.params.issueId }, options).exec((err, result) => {
@@ -169,21 +169,29 @@ let addComment = (req, res) => {
 
 let addWatchee = (req, res) => {
 
-    let watcheeObj = {userId: req.body.userId, firstName: req.body.firstName}
+    let watcheeObj = JSON.parse(req.body.watchers);
     //req.body.watchers = JSON.parse(req.body.watchers)
 
-    let options = { $push: { watchers: req.body.watchers } }
-    issueModel.update({ 'issueId': req.params.issueId }, options).exec((err, result) => {
-        if (err) {
-            console.log(err)
-            logger.error(err.message, 'issueController: Database error', 10)
-            let apiResponse = response.generate(true, 'Failed To Add as Watching', 500, null)
-            res.send(apiResponse)
-        } else {
-            let apiResponse = response.generate(false, 'Successfully Added to  Watchers list', 200, result)
-            res.send(apiResponse)
-        }
-    });// end issue model update
+    let options = { $push: { watchers: watcheeObj } }
+    if(commentObj){
+
+        issueModel.update({ 'issueId': req.params.issueId }, options).exec((err, result) => {
+            if (err) {
+                console.log(err)
+                logger.error(err.message, 'issueController: Database error', 10)
+                let apiResponse = response.generate(true, 'Failed To Add as Watching', 500, null)
+                res.send(apiResponse)
+            } else {
+                let apiResponse = response.generate(false, 'Successfully Added to  Watchers list', 200, result)
+                res.send(apiResponse)
+            }
+        });// end issue model update
+    }
+    else{
+                logger.error(err.message, 'issueController: Watchee missing error', 10);
+                let apiResponse = response.generate(true, 'Watcher cannot be Null', 500, null)
+                res.send(apiResponse)
+    }
 
 }
 

@@ -3,6 +3,8 @@ const router = express.Router();
 const appConfig = require("../../config/appConfig");
 const auth = require('../middlewares/auth');
 const issueController = require("./../controllers/issueController");
+const notificationController = require("./../controllers/notificationController");
+
 //const notifyController = require("./../controllers/notifyController");
 //const multer = require('./../middlewares/multer');
 
@@ -202,6 +204,45 @@ module.exports.setRouter = (app) => {
 
     app.get(`${baseUrl}/:userId/assigneeIssues`,auth.isAuthorized,issueController.getAllIssuesByAssignee);
 
-    // app.get(`${baseUrl}/autoComplete`,auth.isAuthorized,issueController.assigneeAutocomplete);   
+	// app.get(`${baseUrl}/autoComplete`,auth.isAuthorized,issueController.assigneeAutocomplete);   
+	app.get(`${baseUrl}/:userId/notification`, auth.isAuthorized,notificationController.getNotificationById);
+	/**
+	* @api {get} /api/v1/issues/:userId/notification Get notifications
+	* @apiVersion 0.0.1
+	* @apiGroup notification
+	*
+	* @apiParam {String} authToken The authToken for authentication. (Send authToken as query params)
+	* @apiParam {String} userId The userId of user. (params) (required)
+	*
+	* @apiSuccessExample {json} Success-Response:
+	*    
+	*   {
+	*		"error": false,
+	*		"message": "Notify Details Found",
+	*		"status": 200,
+	*		"data":[
+	*                {
+	*                    "notifyId": "String",
+	*                    "createdOn": "Date",
+	*                    "seen": "Boolean",
+	*                    "message": "String",
+	*                    "receiverId": Object.type(Array),
+	*                    "receiverName": "String",
+	*                    "senderId": "String",
+	*                    "senderName": "String"
+	*                },
+	*               .......
+	*               ]
+	*   }
+	* @apiErrorExample {json} Error-Response:
+	*
+	* {
+	*   "error": true,
+	*   "message": "Failed To Find Notify Details",
+	*   "status": 500,
+	*   "data": null
+	* }
+	*/
+  
 
 }
